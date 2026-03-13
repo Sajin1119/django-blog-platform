@@ -33,5 +33,6 @@ class PostSerializer(serializers.ModelSerializer):
             'tags',
             'created_at',
             'updated_at',
+            'views_count',
             'is_published'
         ]

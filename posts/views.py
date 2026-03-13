@@ -1,7 +1,10 @@
 from rest_framework import generics, permissions,filters
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import Post
+from .models import Post,PostLike
 from .serializers import PostSerializer
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 
 class PostListView(generics.ListAPIView):
@@ -22,6 +25,16 @@ class PostDetailView(generics.RetrieveAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     lookup_field = 'slug'
+
+    def retrieve(self, request, *args, **kwargs):
+
+        instance = self.get_object()
+
+        instance.views_count += 1
+        instance.save()
+
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 
 
 class PostCreateView(generics.CreateAPIView):
@@ -45,3 +58,36 @@ class PostDeleteView(generics.DestroyAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def like_post(request, post_id):
+
+    post = Post.objects.get(id=post_id)
+
+    like, created = PostLike.objects.get_or_create(
+        user=request.user,
+        post=post
+    )
+
+    if not created:
+        like.delete()
+        return Response({"message": "Post unliked"})
+
+    return Response({"message": "Post liked"})
+
+
+@api_view(['GET'])
+def post_likes(request, post_id):
+
+    post = Post.objects.get(id=post_id)
+
+    likes_count = post.likes.count()
+
+    return Response({
+        "post": post_id,
+        "likes": likes_count
+    })
