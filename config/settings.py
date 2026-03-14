@@ -34,7 +34,10 @@ AUTH_USER_MODEL = 'users.User'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "https://blog-frontend-eta-wine.vercel.app",
+    "django-blog-kf8c.onrender.com"
 ]
+
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
