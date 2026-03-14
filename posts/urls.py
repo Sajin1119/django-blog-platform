@@ -15,15 +15,12 @@ urlpatterns = [
 
     path('create/', PostCreateView.as_view()),
 
-    path('update/<int:pk>/', PostUpdateView.as_view()),
-
-    path('delete/<int:pk>/', PostDeleteView.as_view()),
-
-    path('<int:post_id>/like/', like_post),
-
-    path('<int:post_id>/likes/', post_likes),
-
-    
+    # DETAIL PAGE
     path('<slug:slug>/', PostDetailView.as_view()),
+
+    path('update/<int:pk>/', PostUpdateView.as_view()),
+    path('delete/<slug:slug>/', PostDeleteView.as_view()),
+    path('<int:post_id>/like/', like_post),
+    path('<int:post_id>/likes/', post_likes),
 
 ]

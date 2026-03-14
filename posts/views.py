@@ -8,13 +8,12 @@ from rest_framework.response import Response
 
 
 class PostListView(generics.ListAPIView):
-
-    queryset = Post.objects.filter(is_published=True)
+    queryset = Post.objects.filter(is_published=True).order_by('-created_at')
     serializer_class = PostSerializer
-
     filter_backends = [
         DjangoFilterBackend,
-        filters.SearchFilter
+        filters.SearchFilter,
+        filters.OrderingFilter,
     ]
     filterset_fields = ['category']
     search_fields = ['title', 'content']
@@ -52,13 +51,15 @@ class PostUpdateView(generics.UpdateAPIView):
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+from rest_framework import generics
+from .models import Post
+from .serializers import PostSerializer
+from .permissions import IsAuthorOrReadOnly
 
 class PostDeleteView(generics.DestroyAPIView):
-
-    queryset = Post.objects.all()
-    serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticated]
-
+    queryset = Post.objects.all()
+    lookup_field = 'slug'
 
 
 
